@@ -1,6 +1,9 @@
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,6 +20,7 @@ public class LambaPraticeDemo {
 
 		Cat catA = new Cat("Tom");
 		catA.setAge(11);
+		catList.add(catA);
 		Cat catB = new Cat("B");
 		catB.setAge(9);
 		catList.add(catB);
@@ -41,17 +45,34 @@ public class LambaPraticeDemo {
 		Supplier<Cat> newCat = () -> new Cat("CatC");
 		System.out.println(newCat.get().getName());
 
-		/******* stream & map ， 轉換stream的內容 ********/
+		/******* stream & map ， 轉換stream的內容 ex1 ********/
 		catList.forEach(cat -> System.out.print(cat.getName()));
-		System.out.println("/******* stream & map ， 轉換stream的內容 ********/");
 		List<String> age10CatList = catList.stream().filter(cat -> cat.getAge() < 10).map(Cat::getName)
 				.collect(Collectors.toList());
 		age10CatList.forEach(name -> System.out.println(name));
 
+		/******* stream & map ， 轉換stream的內容 ex2 ********/
+		System.out.println("/******* stream & map ， 轉換stream的內容 ex2 ********/");
+		Set<Integer> adultAges = new HashSet();
+		adultAges.add(9);
+		adultAges.add(11);
+		List<String> adultCatList = catList.stream().peek(cat -> System.out.println(cat.getName()))
+				.filter(cat -> adultAges.contains(cat.getAge())).peek(cat -> System.out.println(cat.getName()))
+				.map(cat -> cat.getName()).collect(Collectors.toList());
+		System.out.println("/******* stream & map ， 轉換stream的內容 ex2 ********/");
+		adultCatList.forEach(System.out::print);
+
 		/******* stream & peek ， 觀察stream運作時的內容 ********/
-		System.out.println("/******* stream & peek ， 觀察stream運作時的內容 ********/");
 		catList.stream().peek(cat -> System.out.println(cat.getName())).filter(cat -> cat.getAge() > 10)
 				.peek(cat -> System.out.println(cat.getName())).forEach(cat -> System.out.println(cat.getAge()));
+
+		/******* stream & collectors & toMap ， 依照設定的key value值組成map ********/
+		Map<String, Integer> catMap = catList.stream().collect(Collectors.toMap(Cat::getName, Cat::getAge));
+		System.out.println(catMap);
+
+		/******* stream & Collectors.averagingDouble ， 將集合中的特定屬性計算平均數並為Double ********/
+		Double avgCatAge = catList.stream().collect(Collectors.averagingDouble(cat -> cat.getAge()));
+		System.out.println(avgCatAge);
 
 	}
 
